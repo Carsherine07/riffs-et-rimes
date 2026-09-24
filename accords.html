@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Théorie des Accords - Riffs & Rimes</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Intégration PWA et iOS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Riffs&Rimes">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <!-- Polices et Icônes -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- 1. COULEURS ET STRUCTURE --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #000000;
+            border-bottom: 1px solid #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .titre-or {
+            background: linear-gradient(to right, #fef08a, #ffd700, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --- 2. CONTROLES (Sélecteurs) --- */
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            background-color: #0a0a0a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        select {
+            background-color: #000000;
+            border: 1px solid #1e293b;
+            color: #ffd700;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            outline: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 0 1px #ffd700;
+        }
+
+        /* --- 3. PIANO INTERACTIF --- */
+        .piano-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .piano {
+            position: relative;
+            height: 200px;
+            /* La largeur sera calculée par JS */
+        }
+
+        .key {
+            position: absolute;
+            top: 0;
+            border-radius: 0 0 5px 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            user-select: none;
+            transition: background-color 0.1s;
+        }
+
+        .key-white {
+            background-color: #f8fafc;
+            border: 1px solid #334155;
+            height: 200px;
+            width: 48px;
+            color: #94a3b8;
+            z-index: 1;
+        }
+
+        .key-black {
+            background-color: #0f172a;
+            border: 1px solid #000;
+            height: 125px;
+            width: 28px;
+            color: transparent;
+            z-index: 2;
+        }
+
+        /* États Actifs (Quand une touche fait partie de l'accord) */
+        .key-white.active {
+            background: linear-gradient(to bottom, #fef08a, #ffd700);
+            border-color: #b8860b;
+            color: #000;
+        }
+
+        .key-black.active {
+            background: linear-gradient(to bottom, #ffd700, #b8860b);
+            border-color: #fef08a;
+            color: #000;
+        }
+
+        /* --- 4. SECTION THEORIE --- */
+        .theory-section {
+            background-color: #0a0a0a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        .theory-section h2 {
+            margin-top: 0;
+            color: #ffd700;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 10px;
+        }
+
+        .theory-section h3 {
+            color: #fef08a;
+            margin-top: 25px;
+        }
+
+        .interval-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .interval-list li {
+            background-color: #000;
+            border: 1px solid #1e293b;
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
+
+        .interval-name {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover { color: #ffd700; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <i class="fas fa-graduation-cap" style="color: #ffd700; font-size: 1.5rem;"></i>
+        <h1 class="titre-or">Encyclopédie des Accords</h1>
+    </header>
+
+    <main>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
+
+        <section class="controls">
+            <div class="input-group">
+                <label for="rootNote">Note Fondamentale (Tonique)</label>
+                <select id="rootNote">
+                    <option value="0">Do (C)</option>
+                    <option value="1">Do# / Réb (C#)</option>
+                    <option value="2">Ré (D)</option>
+                    <option value="3">Ré# / Mib (D#)</option>
+                    <option value="4">Mi (E)</option>
+                    <option value="5">Fa (F)</option>
+                    <option value="6">Fa# / Solb (F#)</option>
+                    <option value="7">Sol (G)</option>
+                    <option value="8">Sol# / Lab (G#)</option>
+                    <option value="9">La (A)</option>
+                    <option value="10">La# / Sib (A#)</option>
+                    <option value="11">Si (B)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="chordType">Type d'accord</label>
+                <select id="chordType">
+                    <optgroup label="Triades de base">
+                        <option value="major">Majeur</option>
+                        <option value="minor">Mineur (m)</option>
+                        <option value="dim">Diminué (dim)</option>
+                        <option value="aug">Augmenté (aug)</option>
+                    </optgroup>
+                    <optgroup label="Accords Suspendus">
+                        <option value="sus2">Sus 2</option>
+                        <option value="sus4">Sus 4</option>
+                    </optgroup>
+                    <optgroup label="Accords de Septième">
+                        <option value="dom7">Septième de Dominante (7)</option>
+                        <option value="min7">Mineur 7 (m7)</option>
+                        <option value="maj7">Majeur 7 (M7 / Maj7)</option>
+                        <option value="dim7">Diminué 7 (dim7)</option>
+                        <option value="m7b5">Demi-diminué (m7b5)</option>
+                    </optgroup>
+                    <optgroup label="Extensions (9, 11, 13)">
+                        <option value="add9">Add 9 (add9)</option>
+                        <option value="madd9">Mineur Add 9 (m add9)</option>
+                        <option value="dom9">Neuvième (9)</option>
+                        <option value="maj9">Majeur 9 (Maj9)</option>
+                    </optgroup>
+                </select>
+            </div>
+        </section>
+
+        <!-- PIANO INTERACTIF -->
+        <div class="piano-container">
+            <div class="piano" id="piano">
+                <!-- Les touches sont générées dynamiquement en JS -->
+            </div>
+        </div>
+
+        <section class="theory-section">
+            <h2>Comment se forme un accord ?</h2>
+            <p>Un accord est une superposition de notes jouées simultanément, construites par empilement d'intervalles (souvent des tierces) à partir d'une note de base appelée <strong>Fondamentale</strong>.</p>
+            
+            <h3>Les éléments de base :</h3>
+            <ul class="interval-list">
+                <li><span class="interval-name">1. La Fondamentale :</span> C'est la note qui donne son nom à l'accord (ex: le "Do" dans l'accord de Do majeur).</li>
+                <li><span class="interval-name">3. La Tierce :</span> Située au-dessus de la fondamentale, c'est elle qui définit si l'accord est <strong>Majeur</strong> (sonorité joyeuse, écart de 4 demi-tons) ou <strong>Mineur</strong> (sonorité mélancolique, écart de 3 demi-tons).</li>
+                <li><span class="interval-name">5. La Quinte :</span> Elle stabilise l'accord. Elle est généralement "juste" (7 demi-tons), mais peut être diminuée ou augmentée pour créer de la tension.</li>
+            </ul>
+
+            <h3>Les enrichissements :</h3>
+            <p>Une fois la triade (1-3-5) posée, on peut ajouter des couleurs :</p>
+            <ul class="interval-list">
+                <li><span class="interval-name">La 7ème :</span> Apporte une forte tension (souvent utilisée pour résoudre vers un autre accord).</li>
+                <li><span class="interval-name">Les Sus (2 ou 4) :</span> On supprime la tierce pour la remplacer par la seconde ou la quarte. L'accord n'est ni majeur ni mineur, il reste "en suspens".</li>
+                <li><span class="interval-name">La 9ème (add9) :</span> On rajoute la deuxième note de la gamme à l'octave supérieure, ce qui donne une sonorité très riche et spatiale.</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <script>
+        // --- DONNEES DES ACCORDS (En demi-tons à partir de la fondamentale) ---
+        const chordFormulas = {
+            // Triades
+            'major': [0, 4, 7],
+            'minor': [0, 3, 7],
+            'dim': [0, 3, 6],
+            'aug': [0, 4, 8],
+            // Suspendus
+            'sus2': [0, 2, 7],
+            'sus4': [0, 5, 7],
+            // Septièmes
+            'dom7': [0, 4, 7, 10],
+            'min7': [0, 3, 7, 10],
+            'maj7': [0, 4, 7, 11],
+            'dim7': [0, 3, 6, 9],
+            'm7b5': [0, 3, 6, 10], // demi-diminué
+            // Extensions (Le +12 correspond à l'octave supérieure)
+            'add9': [0, 4, 7, 14], 
+            'madd9': [0, 3, 7, 14],
+            'dom9': [0, 4, 7, 10, 14], // Fondamentale, tierce maj, quinte, 7eme min, 9eme
+            'maj9': [0, 4, 7, 11, 14]
+        };
+
+        const notesNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const isBlackKey = [false, true, false, true, false, false, true, false, true, false, true, false];
+
+        // Éléments du DOM
+        const pianoContainer = document.getElementById('piano');
+        const rootSelect = document.getElementById('rootNote');
+        const chordSelect = document.getElementById('chordType');
+
+        // Génération du Piano (2 Octaves + 1 note pour finir proprement sur un Do)
+        const totalKeys = 25; 
+        const keyWidth = 48; // Largeur touche blanche
+        let whiteKeyIndex = 0;
+
+        function buildPiano() {
+            pianoContainer.style.width = `${15 * keyWidth}px`; // 15 touches blanches au total
+
+            for (let i = 0; i < totalKeys; i++) {
+                const noteTypeIndex = i % 12;
+                const isBlack = isBlackKey[noteTypeIndex];
+                
+                const keyElement = document.createElement('div');
+                keyElement.classList.add('key');
+                keyElement.id = `key-${i}`;
+                keyElement.dataset.index = i;
+
+                if (isBlack) {
+                    keyElement.classList.add('key-black');
+                    // Positionner la touche noire à cheval sur la précédente et la suivante
+                    keyElement.style.left = `${(whiteKeyIndex * keyWidth) - 14}px`;
+                } else {
+                    keyElement.classList.add('key-white');
+                    keyElement.style.left = `${whiteKeyIndex * keyWidth}px`;
+                    // Afficher le nom de la note uniquement sur les Do pour se repérer
+                    if (notesNames[noteTypeIndex] === 'C') {
+                        keyElement.innerText = 'C';
+                    }
+                    whiteKeyIndex++;
+                }
+
+                pianoContainer.appendChild(keyElement);
+            }
+        }
+
+        // Mise à jour de l'affichage de l'accord
+        function updateChordDisplay() {
+            // 1. Réinitialiser toutes les touches
+            document.querySelectorAll('.key').forEach(k => k.classList.remove('active'));
+
+            // 2. Récupérer les valeurs choisies
+            const root = parseInt(rootSelect.value);
+            const formula = chordFormulas[chordSelect.value];
+
+            // 3. Activer les touches correspondantes
+            formula.forEach(interval => {
+                const targetKeyIndex = root + interval;
+                
+                // Vérifier qu'on ne sort pas du clavier (max index 24)
+                if (targetKeyIndex < totalKeys) {
+                    const keyToActivate = document.getElementById(`key-${targetKeyIndex}`);
+                    if (keyToActivate) {
+                        keyToActivate.classList.add('active');
+                    }
+                }
+            });
+        }
+
+        // Initialisation
+        buildPiano();
+        updateChordDisplay();
+
+        // Écouteurs d'événements
+        rootSelect.addEventListener('change', updateChordDisplay);
+        chordSelect.addEventListener('change', updateChordDisplay);
+
+    </script>
+</body>
+</html>

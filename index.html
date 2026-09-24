@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riffs & Rimes - Assistant de Création</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Intégration PWA et iOS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Riffs&Rimes">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <!-- Tailwind CSS (uniquement pour la structure et l'espacement) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Polices -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ==========================================================================
+           1. COULEURS GLOBALES ET FONDS
+           ========================================================================== */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000; /* Noir absolu */
+            color: #e2e8f0; /* Texte principal clair */
+        }
+
+        .panel-bg {
+            background-color: #000000;
+        }
+
+        .header-main, .panel-header {
+            background-color: #000000;
+            border-bottom: 1px solid #1e293b; /* Bordure de séparation subtile */
+        }
+
+        .text-muted {
+            color: #94a3b8; /* Gris pour les textes secondaires */
+        }
+        
+        .text-success {
+            color: #4ade80; /* Vert pour la sauvegarde */
+        }
+
+        /* ==========================================================================
+           2. DÉGRADÉS ET ACCENTS (OR / JAUNE)
+           ========================================================================== */
+        .titre-or {
+            /* Dégradé du texte des titres */
+            background: linear-gradient(to right, #fef08a, #ffd700, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo-box {
+            /* Fond de l'icône guitare */
+            background: linear-gradient(135deg, #fef08a, #ffd700);
+            color: #000000;
+        }
+
+        .icon-or {
+            color: #ffd700; /* Icônes des sous-titres */
+        }
+
+        /* ==========================================================================
+           3. BOUTONS
+           ========================================================================== */
+        .btn-template {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-template:hover {
+            background-color: #ffd700;
+            color: #000000;
+        }
+
+        .btn-add {
+            background: linear-gradient(to right, #ffd700, #b8860b);
+            color: #000000;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-add:hover {
+            background: linear-gradient(to right, #fef08a, #ffd700);
+        }
+
+        /* ==========================================================================
+           4. ZONES DE TEXTE ET FORMULAIRES
+           ========================================================================== */
+        .textarea-custom {
+            color: #e2e8f0;
+        }
+        .textarea-custom::placeholder {
+            color: #475569;
+        }
+
+        .stats-margin {
+            background-color: #0a0a0a;
+            border-left: 1px solid #1e293b;
+            color: #94a3b8;
+        }
+
+        .input-custom {
+            background-color: #0a0a0a;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        .input-custom:focus {
+            border-color: #ffd700;
+            outline: none;
+            box-shadow: 0 0 0 1px #ffd700;
+        }
+
+        /* ==========================================================================
+           5. SÉPARATEUR (RESIZER) ET LIGNES
+           ========================================================================== */
+        .resizer-bar {
+            background-color: #1e293b;
+            border-left: 1px solid #000000;
+            border-right: 1px solid #000000;
+            transition: background-color 0.2s;
+        }
+        .resizer-bar:hover {
+            background-color: #ffd700;
+        }
+        .resizer-handle {
+            background-color: #64748b;
+            transition: background-color 0.2s;
+        }
+        .resizer-bar:hover .resizer-handle {
+            background-color: #000000;
+        }
+
+        .separator-line {
+            border-top: 1px solid #1e293b;
+            border-bottom: none;
+        }
+
+        /*
+           GRILLE D'ACCORDS
+           */
+        .chord-list-container {
+            background-color: #0a0a0a;
+            border: 1px solid #1e293b;
+        }
+        
+        .chord-box {
+            background-color: #0a0a0a;
+            border: 1px solid #1e293b;
+            transition: all 0.2s ease;
+        }
+        .chord-box:focus-within {
+            border-color: #ffd700;
+            box-shadow: 0 0 0 1px #ffd700;
+        }
+        
+        .chord-input {
+            width: 4rem;
+            text-align: center;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-weight: bold;
+            color: #ffd700;
+            text-transform: uppercase;
+        }
+        
+        .chord-del {
+            color: #64748b;
+            border-left: 1px solid #1e293b;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+        .chord-del:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        /*
+           UTILITAIRES (Scrollbar & Synchronisation)
+           */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .sync-lines {
+            line-height: 1.75rem;
+            font-size: 0.95rem;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        #poetryInput { white-space: pre; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- HEADER -->
+    <header class="p-4 flex justify-between items-center shrink-0 shadow-md header-main">
+        <div class="flex items-center gap-3">
+            <div class="p-2.5 rounded-lg shadow-lg logo-box">
+                <i class="fas fa-guitar text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold leading-tight titre-or">
+                    Riffs & Rimes
+                </h1>
+                <p class="text-xs font-medium text-muted">Studio d'écriture & Arrangements</p>
+            </div>
+        </div>
+        
+        <!-- NAVIGATION ET SAUVEGARDE -->
+        <div class="text-xs flex items-center gap-4 text-muted">
+            
+            <!-- Boutons vers les Annexes -->
+            <div class="flex gap-2">
+                <a href="rimes.html" class="btn-template px-3 py-1.5 rounded text-xs font-medium shadow-sm flex items-center gap-2 no-underline">
+                    <i class="fas fa-feather-alt icon-or"></i> Dico Rimes
+                </a>
+                <a href="accords.html" class="btn-template px-3 py-1.5 rounded text-xs font-medium shadow-sm flex items-center gap-2 no-underline">
+                    <i class="fas fa-keyboard icon-or"></i> Dico Piano
+                </a>
+                <a href="guitare.html" class="btn-template px-3 py-1.5 rounded text-xs font-medium shadow-sm flex items-center gap-2 no-underline">
+                    <i class="fas fa-guitar icon-or"></i> Dico Manche
+                </a>
+            </div>
+            
+            <!-- Séparateur vertical -->
+            <div class="h-6 w-px bg-slate-800"></div>
+            
+            <!-- Indicateur de sauvegarde -->
+            <span class="flex items-center gap-2">
+                <i class="fas fa-save text-success"></i> Sauvegarde auto activée
+            </span>
+            
+        </div>
+    </header>
+
+    <!-- MAIN LAYOUT -->
+    <main class="flex-grow flex flex-row overflow-hidden relative">
+        
+        <!-- PANNEAU GAUCHE : L'Atelier des mots -->
+        <section id="leftPanel" class="flex flex-col overflow-hidden relative panel-bg" style="width: 50%; min-width: 15%; max-width: 85%;">
+            
+            <!-- Barre d'outils Poésie -->
+            <div class="p-3 flex flex-col gap-2 shrink-0 panel-header">
+                <h2 class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
+                    <i class="fas fa-feather-alt icon-or"></i> 
+                    <span class="titre-or">L'Atelier des mots</span>
+                </h2>
+                <div class="flex gap-2 flex-wrap mt-1">
+                    <button class="template-btn px-3 py-1.5 rounded text-xs font-medium shadow-sm btn-template" data-type="haiku">+ Haïku</button>
+                    <button class="template-btn px-3 py-1.5 rounded text-xs font-medium shadow-sm btn-template" data-type="rondeau">+ Rondeau</button>
+                    <button class="template-btn px-3 py-1.5 rounded text-xs font-medium shadow-sm btn-template" data-type="villanelle">+ Villanelle</button>
+                    <button class="template-btn px-3 py-1.5 rounded text-xs font-medium shadow-sm btn-template" data-type="sonnet">+ Sonnet</button>
+                    <button class="template-btn px-3 py-1.5 rounded text-xs font-medium shadow-sm btn-template" data-type="ballade">+ Ballade</button>
+                </div>
+            </div>
+            
+            <!-- Zone d'édition et Compteur -->
+            <div class="flex flex-row flex-grow relative overflow-hidden panel-bg">
+                <!-- Textarea -->
+                <textarea id="poetryInput" class="flex-grow bg-transparent outline-none resize-none sync-lines pl-5 pr-2 overflow-auto textarea-custom" placeholder="Tape tes vers ici...&#10;Ex: La blanche colombe"></textarea>
+                
+                <!-- Syllable & Word Counter Margin -->
+                <div class="w-24 text-center sync-lines overflow-hidden select-none shrink-0 stats-margin" id="statsMargin" aria-hidden="true">
+                    <!-- Format: ( Syl, Mots ) injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- DRAGGABLE RESIZER -->
+        <div id="resizer" class="w-1.5 cursor-col-resize shrink-0 z-20 flex items-center justify-center group relative shadow-lg resizer-bar">
+            <!-- Petite poignée visuelle au centre du séparateur -->
+            <div class="h-8 w-0.5 rounded resizer-handle"></div>
+        </div>
+
+        <!-- PANNEAU DROIT : L'Atelier du son -->
+        <section id="rightPanel" class="flex-grow flex flex-col overflow-y-auto relative min-w-[15%] panel-bg">
+            
+            <div class="p-3 shrink-0 sticky top-0 z-10 panel-header">
+                <h2 class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
+                    <i class="fas fa-sliders-h icon-or"></i> 
+                    <span class="titre-or">L'Atelier du son</span>
+                </h2>
+            </div>
+            
+            <div class="p-6 flex flex-col gap-6">
+                
+                <!-- Setup Matériel -->
+                <div class="space-y-4">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-medium uppercase tracking-wider text-muted">Type d'instrument</label>
+                        <select id="guitarType" class="rounded-md p-2.5 outline-none input-custom">
+                            <option value="Acoustique">Guitare Acoustique</option>
+                            <option value="Classique">Guitare Classique (Nylon)</option>
+                            <option value="Electrique">Guitare Électrique</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-medium uppercase tracking-wider text-muted">Accordage (Tuning)</label>
+                        <input type="text" id="tuning" placeholder="ex: Standard, Drop D..." class="rounded-md p-2.5 outline-none input-custom">
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-medium uppercase tracking-wider text-muted">Réglages Ampli & Effets</label>
+                        <textarea id="effectsNotes" class="rounded-md p-3 outline-none resize-none min-h-[100px] input-custom" placeholder="Ex: Capo 3, Reverb légère, Canal clean..."></textarea>
+                    </div>
+                </div>
+
+                <hr class="separator-line">
+
+                <!-- Grille d'accords dynamique -->
+                <div class="flex flex-col gap-3">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-medium uppercase tracking-wider flex items-center gap-2 text-muted">
+                            <i class="fas fa-music"></i> Grille d'accords
+                        </label>
+                        <button id="addChordBtn" class="text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-md btn-add">
+                            <i class="fas fa-plus"></i> Ajouter
+                        </button>
+                    </div>
+                    
+                    <div id="chordList" class="flex flex-wrap gap-3 items-center min-h-[50px] p-4 rounded-lg chord-list-container">
+                        <!-- Chords injected here -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        
+    </main>
+
+    <script>
+        // DOM Elements
+        const poetryInput = document.getElementById('poetryInput');
+        const statsMargin = document.getElementById('statsMargin');
+        const guitarType = document.getElementById('guitarType');
+        const tuning = document.getElementById('tuning');
+        const effectsNotes = document.getElementById('effectsNotes');
+        const chordListContainer = document.getElementById('chordList');
+        const addChordBtn = document.getElementById('addChordBtn');
+        const templateBtns = document.querySelectorAll('.template-btn');
+
+        // Resizer Elements
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        const STORAGE_KEY = 'riffs_rimes_app_data';
+        const WIDTH_STORAGE_KEY = 'riffs_rimes_panel_width';
+        let chordsArray = [];
+
+        // Templates Poétiques
+        const templates = {
+            haiku: "Ligne 1\nLigne 2\nLigne 3",
+            rondeau: "--- Strophe 1 ---\nVers (A)\nVers (A)\nVers (B)\nVers (B)\nVers (A)\n\n--- Strophe 2 ---\nVers (A)\nVers (A)\nVers (B)\n[Rentrent]\n\n--- Strophe 3 ---\nVers (A)\nVers (A)\nVers (B)\nVers (B)\nVers (A)\n[Rentrent]",
+            villanelle: "A1 (Refrain 1)\nb\nA2 (Refrain 2)\n\na\nb\nA1\n\na\nb\nA2\n\na\nb\nA1\n\na\nb\nA2\n\na\nb\nA1\nA2",
+            sonnet: "--- Quatrain 1 ---\nVers (a)\nVers (b)\nVers (b)\nVers (a)\n\n--- Quatrain 2 ---\nVers (a)\nVers (b)\nVers (b)\nVers (a)\n\n--- Tercet 1 ---\nVers (c)\nVers (c)\nVers (d)\n\n--- Tercet 2 ---\nVers (e)\nVers (e)\nVers (d)",
+            ballade: "--- Huitain 1 ---\nVers (a)\nVers (b)\nVers (a)\nVers (b)\nVers (b)\nVers (c)\nVers (b)\nVers (C) [Refrain]\n\n--- Huitain 2 ---\nVers (a)\nVers (b)\nVers (a)\nVers (b)\nVers (b)\nVers (c)\nVers (b)\nVers (C) [Refrain]\n\n--- Huitain 3 ---\nVers (a)\nVers (b)\nVers (a)\nVers (b)\nVers (b)\nVers (c)\nVers (b)\nVers (C) [Refrain]\n\n--- Envoi ---\nVers (b)\nVers (c)\nVers (b)\nVers (C) [Refrain]"
+        };
+
+        function compterSyllabes(ligne) {
+            if (!ligne.trim()) return 0;
+            const mots = ligne.toLowerCase().replace(/[.,;!?:'"()]/g, '').split(/\s+/).filter(m => m.length > 0);
+            let totalSyllabes = 0;
+
+            for (let i = 0; i < mots.length; i++) {
+                let mot = mots[i];
+                let compteMot = 0;
+                
+                const groupesVoyelles = mot.match(/[aeiouyâàäéèêëîïôöûüùœæ]+/g);
+                if (groupesVoyelles) {
+                    compteMot = groupesVoyelles.length;
+                }
+
+                if (mot.endsWith('e')) {
+                    if (i === mots.length - 1) {
+                        compteMot -= 1;
+                    } else {
+                        const motSuivant = mots[i + 1];
+                        const commenceParVoyelleOuH = /^[aeiouyâàäéèêëîïôöûüùœæh]/.test(motSuivant);
+                        if (commenceParVoyelleOuH) {
+                            compteMot -= 1; 
+                        }
+                    }
+                }
+                
+                if (compteMot <= 0 && mot.length > 0) compteMot = 1; 
+                totalSyllabes += compteMot;
+            }
+            return totalSyllabes;
+        }
+
+        function updateStats() {
+            const lignes = poetryInput.value.split('\n');
+            let statsHtml = '';
+            
+            lignes.forEach(ligne => {
+                const textTrimmed = ligne.trim();
+                const nbMots = textTrimmed ? textTrimmed.split(/\s+/).length : 0;
+                
+                if (nbMots === 0) {
+                    statsHtml += `<div>&nbsp;</div>`;
+                } else {
+                    const nbSyllabes = compterSyllabes(ligne);
+                    statsHtml += `<div class="text-xs">( ${nbSyllabes}, ${nbMots} )</div>`;
+                }
+            });
+            statsMargin.innerHTML = statsHtml;
+            saveData();
+        }
+
+        poetryInput.addEventListener('scroll', () => {
+            statsMargin.scrollTop = poetryInput.scrollTop;
+            poetryInput.scrollLeft = 0; 
+        });
+        poetryInput.addEventListener('input', updateStats);
+
+        templateBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const type = e.target.getAttribute('data-type');
+                if (templates[type]) {
+                    if (poetryInput.value.trim() !== "" && !confirm("Insérer ce modèle à la fin de ton texte ?")) return;
+                    const separator = poetryInput.value.trim().length > 0 ? '\n\n' : '';
+                    poetryInput.value = poetryInput.value + separator + templates[type];
+                    updateStats();
+                    poetryInput.scrollTop = poetryInput.scrollHeight;
+                }
+            });
+        });
+
+        function renderChords() {
+            chordListContainer.innerHTML = '';
+            
+            if (chordsArray.length === 0) {
+                chordListContainer.innerHTML = '<span class="text-xs italic w-full text-center text-muted">Aucun accord pour le moment.</span>';
+                return;
+            }
+
+            chordsArray.forEach((chord, index) => {
+                const chordDiv = document.createElement('div');
+                chordDiv.className = 'flex items-center rounded shadow-sm overflow-hidden chord-box';
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = chord;
+                input.className = 'chord-input px-2 py-1.5 text-sm font-mono';
+                input.placeholder = 'Am';
+                input.maxLength = 6;
+                input.oninput = (e) => {
+                    chordsArray[index] = e.target.value;
+                    saveData();
+                };
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'px-2 py-1.5 chord-del';
+                removeBtn.innerHTML = '<i class="fas fa-times text-xs"></i>';
+                removeBtn.onclick = () => {
+                    chordsArray.splice(index, 1);
+                    renderChords();
+                    saveData();
+                };
+
+                chordDiv.appendChild(input);
+                chordDiv.appendChild(removeBtn);
+                chordListContainer.appendChild(chordDiv);
+            });
+        }
+
+        addChordBtn.addEventListener('click', () => {
+            chordsArray.push('');
+            renderChords();
+            saveData();
+            const inputs = chordListContainer.querySelectorAll('.chord-input');
+            if (inputs.length > 0) inputs[inputs.length - 1].focus();
+        });
+
+        // --- LOGIQUE DU RESIZER (Compatible Souris & Écran Tactile) ---
+        function startResize(e) {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        }
+
+        function resize(e) {
+            if (!isResizing) return;
+            
+            // Récupère la position X selon si c'est la souris ou le doigt (tactile)
+            const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const newWidth = (clientX / window.innerWidth) * 100;
+            
+            if (newWidth >= 15 && newWidth <= 85) {
+                leftPanel.style.width = `${newWidth}%`;
+            }
+        }
+
+        function stopResize() {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto';
+                localStorage.setItem(WIDTH_STORAGE_KEY, leftPanel.style.width);
+            }
+        }
+
+        // Événements Souris
+        resizer.addEventListener('mousedown', startResize);
+        document.addEventListener('mousemove', resize);
+        document.addEventListener('mouseup', stopResize);
+
+        // Événements Tactiles (Pour mobile)
+        resizer.addEventListener('touchstart', startResize, { passive: true });
+        document.addEventListener('touchmove', resize, { passive: true });
+        document.addEventListener('touchend', stopResize);
+
+        // --- SAUVEGARDE ET CHARGEMENT ---
+        function saveData() {
+            const data = {
+                poetry: poetryInput.value,
+                guitarType: guitarType.value,
+                tuning: tuning.value,
+                effectsNotes: effectsNotes.value,
+                chords: chordsArray
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            
+            // Effet visuel : l'icône de sauvegarde clignote en or
+            const indicateurSave = document.querySelector('.fa-save');
+            if (indicateurSave) {
+                indicateurSave.style.color = '#ffd700'; 
+                setTimeout(() => {
+                    indicateurSave.style.color = ''; 
+                }, 400);
+            }
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    poetryInput.value = data.poetry || '';
+                    guitarType.value = data.guitarType || 'Acoustique';
+                    tuning.value = data.tuning || '';
+                    effectsNotes.value = data.effectsNotes || '';
+                    chordsArray = data.chords || [];
+                } catch (e) {
+                    console.error("Erreur de lecture des données.", e);
+                }
+            }
+
+            const savedWidth = localStorage.getItem(WIDTH_STORAGE_KEY);
+            if (savedWidth) {
+                leftPanel.style.width = savedWidth;
+            }
+
+            updateStats();
+            renderChords();
+        }
+
+        guitarType.addEventListener('change', saveData);
+        tuning.addEventListener('input', saveData);
+        effectsNotes.addEventListener('input', saveData);
+
+        window.addEventListener('DOMContentLoaded', loadData);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionnaire de Rimes - Riffs & Rimes</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Intégration PWA et iOS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Riffs&Rimes">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #000000; color: #e2e8f0; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        header { background-color: #000000; border-bottom: 1px solid #1e293b; padding: 1rem 2rem; display: flex; align-items: center; gap: 15px; }
+        .titre-or { background: linear-gradient(to right, #fef08a, #ffd700, #b8860b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; margin: 0; font-size: 1.5rem; }
+        main { padding: 2rem; max-width: 800px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+        
+        .back-link { color: #94a3b8; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 30px; transition: color 0.2s; }
+        .back-link:hover { color: #ffd700; }
+
+        .search-container { display: flex; flex-direction: column; gap: 15px; background-color: #0a0a0a; padding: 30px; border-radius: 8px; border: 1px solid #1e293b; margin-bottom: 30px; text-align: center; }
+        .search-container h2 { margin: 0; color: #e2e8f0; font-size: 1.2rem; }
+        
+        .search-box { position: relative; max-width: 500px; margin: 0 auto; width: 100%; }
+        .search-input { width: 100%; background-color: #000000; border: 2px solid #1e293b; color: #ffd700; padding: 15px 20px 15px 50px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; outline: none; transition: all 0.3s ease; box-sizing: border-box; }
+        .search-input:focus { border-color: #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
+        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 1.2rem; }
+        .search-input:focus + .search-icon { color: #ffd700; }
+
+        /* NOUVEAU : Filtre par syllabes */
+        .filters { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 10px; }
+        .filters label { color: #94a3b8; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .syllable-select { background-color: #000000; border: 1px solid #1e293b; color: #ffd700; padding: 8px 15px; border-radius: 6px; font-size: 0.95rem; font-weight: bold; outline: none; cursor: pointer; }
+        .syllable-select:focus { border-color: #ffd700; }
+
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; }
+        .results-title { color: #ffd700; font-weight: 600; margin: 0; }
+        .results-count { color: #64748b; font-size: 0.9rem; }
+        .words-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+        .word-badge { background-color: #0a0a0a; border: 1px solid #1e293b; color: #e2e8f0; padding: 10px 20px; border-radius: 6px; font-size: 1.1rem; transition: all 0.2s ease; cursor: default; }
+        .word-badge:hover { border-color: #ffd700; color: #ffd700; transform: translateY(-2px); background-color: #000000; }
+        .no-results { color: #94a3b8; font-style: italic; text-align: center; padding: 40px; background-color: #0a0a0a; border-radius: 8px; border: 1px dashed #1e293b; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <i class="fas fa-feather-alt" style="color: #ffd700; font-size: 1.5rem;"></i>
+        <h1 class="titre-or">Dictionnaire de Rimes</h1>
+    </header>
+
+    <main>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
+
+        <section class="search-container">
+            <h2>Trouve la rime parfaite pour ton poème</h2>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="Ex: amour, oiseau..." autocomplete="off">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+
+            <!-- NOUVEAU : Le sélecteur de syllabes -->
+            <div class="filters">
+                <label for="syllableSelect"><i class="fas fa-filter"></i> Filtre :</label>
+                <select id="syllableSelect" class="syllable-select">
+                    <option value="all">Toutes les longueurs</option>
+                    <option value="1">1 syllabe</option>
+                    <option value="2">2 syllabes</option>
+                    <option value="3">3 syllabes</option>
+                    <option value="4">4 syllabes</option>
+                    <option value="5">5+ syllabes</option>
+                </select>
+            </div>
+        </section>
+
+        <section id="resultsSection" style="display: none;">
+            <div class="results-header">
+                <h3 class="results-title">Propositions aléatoires :</h3>
+                <span class="results-count" id="resultsCount">0 mot(s)</span>
+            </div>
+            <div class="words-grid" id="wordsGrid"></div>
+        </section>
+        
+        <div id="noResults" class="no-results" style="display: none;">
+            <i class="fas fa-ghost" style="font-size: 2rem; margin-bottom: 15px; display: block; color: #475569;"></i>
+            Aucune rime trouvée pour ce mot (ou ce nombre de syllabes).<br>Essaie un mot plus commun ou change le filtre !
+        </div>
+
+    </main>
+
+    <!-- On charge le dictionnaire complet depuis un fichier externe -->
+    <script src="dico.js"></script>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const syllableSelect = document.getElementById('syllableSelect');
+        const resultsSection = document.getElementById('resultsSection');
+        const noResults = document.getElementById('noResults');
+        const wordsGrid = document.getElementById('wordsGrid');
+        const resultsCount = document.getElementById('resultsCount');
+
+        const phoneticGroups = [
+            ['eau', 'au', 'o', 'ot', 'os', 'aud', 'aut', 'eaux', 'aux'],
+            ['é', 'er', 'ez', 'ai', 'ait', 'ée', 'és', 'ées', 'ais', 'aient', 'et', 'ets'],
+            ['in', 'ain', 'ein', 'un', 'ins', 'ains', 'eins', 'uns', 'int', 'aim'],
+            ['an', 'en', 'ans', 'ens', 'ant', 'ent', 'ang', 'ants', 'ents', 'and', 'ands'],
+            ['on', 'om', 'ont', 'ons', 'onds', 'ong', 'ongs'],
+            ['eur', 'oeur', 'eure', 'eurs', 'oeurs'],
+            ['ir', 'ire', 'ires', 'irs', 'yre'],
+            ['our', 'ours', 'oure', 'oures', 'ourt', 'ourd'],
+            ['ure', 'ures', 'ur', 'urs'],
+            ['ar', 'ard', 'art', 'are', 'ars', 'arts', 'ards', 'ares'],
+            ['ance', 'ense', 'ence', 'ances', 'enses', 'ences'],
+            ['oir', 'oire', 'oirs', 'oires'],
+            ['ou', 'ous', 'out', 'oux', 'oue', 'oues'],
+            ['eu', 'eux', 'eut', 'eus', 'eue', 'eues', 'oeu', 'oeuds', 'eufs'],
+            ['u', 'ut', 'us', 'ue', 'ues', 'ux'],
+            ['i', 'is', 'it', 'ie', 'ies', 'ix', 'y'],
+            ['a', 'as', 'at', 'ats', 'ah'],
+            ['oi', 'oix', 'oie', 'ois', 'oit'],
+            ['ette', 'ète', 'ête', 'ettes', 'ètes', 'êtes'],
+            ['age', 'ages'],
+            ['elle', 'el', 'èles', 'elles', 'els'],
+            ['ique', 'iques', 'ic', 'ics'],
+            ['al', 'ale', 'als', 'ales', 'alle', 'alles'],
+            ['tion', 'tions', 'sion', 'sions'],
+            ['isme', 'ismes']
+        ];
+
+        // NOUVEAU : Algorithme pour compter les syllabes d'un mot
+        function countSyllables(word) {
+            word = word.toLowerCase().trim();
+            if (word.length <= 2) return 1;
+            
+            // On supprime le 'e' ou 'es' final muet pour ne pas fausser le compte (sauf exceptions)
+            let cleanedWord = word.replace(/es?$/i, '');
+            
+            // On compte les groupes de voyelles consécutives (ex: "eau" = 1 syllabe)
+            const matches = cleanedWord.match(/[aeiouyéèêëàâîïôöûüœæ]+/g);
+            return matches ? Math.max(1, matches.length) : 1;
+        }
+
+        function findDynamicRhymes(word) {
+            word = word.toLowerCase().trim();
+            if (word.length < 2) return null;
+            if (typeof dictionnaireComplet === 'undefined') return [];
+
+            let validEndings = [];
+            let bestMatchLength = 0;
+            
+            for (const group of phoneticGroups) {
+                for (const ending of group) {
+                    if (word.endsWith(ending)) {
+                        if (ending.length > bestMatchLength) {
+                            bestMatchLength = ending.length;
+                            validEndings = group;
+                        }
+                    }
+                }
+            }
+
+            if (validEndings.length === 0) {
+                const match = word.match(/[aeiouyéàèêâîôû]+[^aeiouyéàèêâîôû]*$/i);
+                validEndings = match ? [match[0]] : [word.slice(-2)];
+            }
+
+            const allResults = [];
+            for (let i = 0; i < dictionnaireComplet.length; i++) {
+                const dictWord = dictionnaireComplet[i];
+                if (dictWord !== word) {
+                    for (let j = 0; j < validEndings.length; j++) {
+                        if (dictWord.endsWith(validEndings[j])) {
+                            allResults.push(dictWord);
+                            break; 
+                        }
+                    }
+                }
+            }
+            return allResults;
+        }
+
+        // Fonction d'affichage mise à jour (Filtre + Aléatoire)
+        function triggerSearch() {
+            const word = searchInput.value;
+            const syllableFilter = syllableSelect.value;
+
+            if (word.trim() === '') {
+                resultsSection.style.display = 'none';
+                noResults.style.display = 'none';
+                return;
+            }
+
+            let allRhymes = findDynamicRhymes(word);
+
+            if (allRhymes && allRhymes.length > 0) {
+                
+                // 1. Filtrage par syllabes si l'utilisateur a fait un choix
+                if (syllableFilter !== 'all') {
+                    const target = parseInt(syllableFilter);
+                    allRhymes = allRhymes.filter(w => {
+                        const count = countSyllables(w);
+                        return target === 5 ? count >= 5 : count === target;
+                    });
+                }
+
+                // Si après le filtrage, il n'y a plus de mots correspondants
+                if (allRhymes.length === 0) {
+                    resultsSection.style.display = 'none';
+                    noResults.style.display = 'block';
+                    return;
+                }
+
+                // 2. Mélange aléatoire du tableau (Randomisation)
+                allRhymes = allRhymes.sort(() => 0.5 - Math.random());
+
+                // 3. Affichage à l'écran
+                wordsGrid.innerHTML = '';
+                const displayLimit = 200; // Je l'ai réduit à 200 pour encore plus de fluidité
+                const rhymesToDisplay = allRhymes.slice(0, displayLimit);
+                
+                rhymesToDisplay.forEach(rhyme => {
+                    const badge = document.createElement('div');
+                    badge.className = 'word-badge';
+                    badge.innerText = rhyme;
+                    wordsGrid.appendChild(badge);
+                });
+                
+                let countText = `${allRhymes.length} mot(s) trouvé(s) avec ce filtre`;
+                if (allRhymes.length > displayLimit) {
+                    countText += ` (Sélection de ${displayLimit} mots aléatoires)`;
+                }
+                
+                resultsCount.innerText = countText;
+                resultsSection.style.display = 'block';
+                noResults.style.display = 'none';
+            } else {
+                resultsSection.style.display = 'none';
+                noResults.style.display = 'block';
+            }
+        }
+
+        // Les deux événements relancent la recherche
+        searchInput.addEventListener('input', triggerSearch);
+        syllableSelect.addEventListener('change', triggerSearch);
+    </script>
+</body>
+</html>
