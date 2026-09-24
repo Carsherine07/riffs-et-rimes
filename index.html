@@ -208,31 +208,44 @@
            6. ADAPTATION MOBILE (RESPONSIVE)
            ========================================================================== */
         @media (max-width: 768px) {
-            /* On désactive l'écran scindé pour empiler les éléments de haut en bas */
-            main {
-                flex-direction: column !important;
-                overflow-y: auto !important; 
+            /* 1. On débloque la page entière pour autoriser le défilement naturel sur iOS */
+            body {
+                height: auto !important;
+                overflow-y: auto !important;
+                display: block !important;
             }
 
-            /* L'Atelier des mots prend 100% de la largeur */
+            /* 2. Le conteneur principal passe en colonne et se déverrouille */
+            main {
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+
+            /* 3. L'Atelier des mots : on fixe sa hauteur à 60% de l'écran pour écrire confortablement */
             #leftPanel {
                 width: 100% !important;
                 max-width: 100% !important;
-                min-height: 65vh !important; /* Réserve 65% de la hauteur de l'écran pour écrire */
+                height: 60vh !important;
+                min-height: 350px !important;
+                border-bottom: 2px solid #1e293b;
             }
 
-            /* L'Atelier du son passe sagement en dessous */
+            /* 4. L'Atelier du son : se place librement en bas */
             #rightPanel {
                 width: 100% !important;
-                min-height: auto;
+                height: auto !important;
+                min-height: auto !important;
+                overflow: visible !important;
             }
 
-            /* On cache la barre de redimensionnement (inutile sur mobile) */
+            /* 5. Cacher le séparateur du PC */
             #resizer {
                 display: none !important;
             }
 
-            /* Le menu du haut s'adapte pour que les boutons ne débordent plus */
+            /* 6. En-tête adapté */
             .header-main {
                 flex-wrap: wrap;
                 justify-content: center;
