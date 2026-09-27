@@ -14,11 +14,11 @@
     <meta name="apple-mobile-web-app-title" content="Riffs&Rimes">
     <link rel="apple-touch-icon" href="icon.png">
 
-    <!-- Tailwind CSS (uniquement pour la structure et l'espacement) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Polices -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome pour les icônes -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -27,32 +27,24 @@
            ========================================================================== */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000000; /* Noir absolu */
-            color: #e2e8f0; /* Texte principal clair */
+            background-color: #000000;
+            color: #e2e8f0;
         }
 
-        .panel-bg {
-            background-color: #000000;
-        }
+        .panel-bg { background-color: #000000; }
 
         .header-main, .panel-header {
             background-color: #000000;
-            border-bottom: 1px solid #1e293b; /* Bordure de séparation subtile */
+            border-bottom: 1px solid #1e293b;
         }
 
-        .text-muted {
-            color: #94a3b8; /* Gris pour les textes secondaires */
-        }
-        
-        .text-success {
-            color: #4ade80; /* Vert pour la sauvegarde */
-        }
+        .text-muted { color: #94a3b8; }
+        .text-success { color: #4ade80; }
 
         /* ==========================================================================
            2. DÉGRADÉS ET ACCENTS (OR / JAUNE)
            ========================================================================== */
         .titre-or {
-            /* Dégradé du texte des titres */
             background: linear-gradient(to right, #fef08a, #ffd700, #b8860b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -61,14 +53,11 @@
         }
 
         .logo-box {
-            /* Fond de l'icône guitare */
             background: linear-gradient(135deg, #fef08a, #ffd700);
             color: #000000;
         }
 
-        .icon-or {
-            color: #ffd700; /* Icônes des sous-titres */
-        }
+        .icon-or { color: #ffd700; }
 
         /* ==========================================================================
            3. BOUTONS
@@ -97,18 +86,8 @@
         /* ==========================================================================
            4. ZONES DE TEXTE ET FORMULAIRES
            ========================================================================== */
-        .textarea-custom {
-            color: #e2e8f0;
-        }
-        .textarea-custom::placeholder {
-            color: #475569;
-        }
-
-        .stats-margin {
-            background-color: #0a0a0a;
-            border-left: 1px solid #1e293b;
-            color: #94a3b8;
-        }
+        .textarea-custom { color: #e2e8f0; }
+        .textarea-custom::placeholder { color: #475569; }
 
         .input-custom {
             background-color: #0a0a0a;
@@ -131,25 +110,16 @@
             border-right: 1px solid #000000;
             transition: background-color 0.2s;
         }
-        .resizer-bar:hover {
-            background-color: #ffd700;
-        }
-        .resizer-handle {
-            background-color: #64748b;
-            transition: background-color 0.2s;
-        }
-        .resizer-bar:hover .resizer-handle {
-            background-color: #000000;
-        }
+        .resizer-bar:hover { background-color: #ffd700; }
+        .resizer-handle { background-color: #64748b; transition: background-color 0.2s; }
+        .resizer-bar:hover .resizer-handle { background-color: #000000; }
 
         .separator-line {
             border-top: 1px solid #1e293b;
             border-bottom: none;
         }
 
-        /*
-           GRILLE D'ACCORDS
-           */
+        /* GRILLES D'ACCORDS */
         .chord-list-container {
             background-color: #0a0a0a;
             border: 1px solid #1e293b;
@@ -187,35 +157,22 @@
             color: #f87171;
         }
 
-        /*
-           UTILITAIRES (Scrollbar & Synchronisation)
-           */
+        /* UTILITAIRES */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        .sync-lines {
-            line-height: 1.75rem;
-            font-size: 0.95rem;
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        #poetryInput { white-space: pre; }
-
         /* ==========================================================================
            6. ADAPTATION MOBILE (RESPONSIVE)
            ========================================================================== */
         @media (max-width: 768px) {
-            /* 1. On débloque la page entière pour autoriser le défilement naturel sur iOS */
             body {
                 height: auto !important;
                 overflow-y: auto !important;
                 display: block !important;
             }
 
-            /* 2. Le conteneur principal passe en colonne et se déverrouille */
             main {
                 display: flex !important;
                 flex-direction: column !important;
@@ -223,7 +180,6 @@
                 height: auto !important;
             }
 
-            /* 3. L'Atelier des mots : on fixe sa hauteur à 60% de l'écran pour écrire confortablement */
             #leftPanel {
                 width: 100% !important;
                 max-width: 100% !important;
@@ -232,7 +188,6 @@
                 border-bottom: 2px solid #1e293b;
             }
 
-            /* 4. L'Atelier du son : se place librement en bas */
             #rightPanel {
                 width: 100% !important;
                 height: auto !important;
@@ -240,12 +195,8 @@
                 overflow: visible !important;
             }
 
-            /* 5. Cacher le séparateur du PC */
-            #resizer {
-                display: none !important;
-            }
+            #resizer { display: none !important; }
 
-            /* 6. En-tête adapté */
             .header-main {
                 flex-wrap: wrap;
                 justify-content: center;
@@ -275,12 +226,8 @@
             
            <!-- Boutons vers les Annexes -->
             <div class="flex gap-2">
-                <a href="rimes.html" class="btn-template px-3 py-1.5 rounded text-xs font-medium shadow-sm flex items-center gap-2 no-underline">
-                    <i class="fas fa-feather-alt icon-or"></i> Dico Rimes
-                </a>
                 
                 <a href="accords.html" class="btn-template px-3 py-1.5 rounded text-xs font-medium shadow-sm flex items-center gap-2 no-underline">
-                    <!-- Nouvelle icône Piano dessinée en SVG -->
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.1em" height="1.1em" class="icon-or" fill="currentColor">
                         <rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
                         <line x1="6" y1="4" x2="6" y2="20" stroke="currentColor" stroke-width="2"/>
@@ -313,50 +260,47 @@
     <!-- MAIN LAYOUT -->
     <main class="flex-grow flex flex-row overflow-hidden relative">
         
-        <!-- PANNEAU GAUCHE : L'Atelier des mots -->
+        <!-- PANNEAU GAUCHE : L'Atelier des paroles -->
         <section id="leftPanel" class="flex flex-col overflow-hidden relative panel-bg" style="width: 50%; min-width: 15%; max-width: 85%;">
             
-            <!-- Barre d'outils Poésie -->
-            <div class="p-3 flex flex-col gap-2 shrink-0 panel-header">
+            <!-- Barre d'outils Paroles -->
+            <div class="p-3 flex flex-col gap-1 shrink-0 panel-header">
                 <h2 class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
-                    <i class="fas fa-feather-alt icon-or"></i> 
-                    <span class="titre-or">L'Atelier des mots</span>
+                    <i class="fas fa-microphone-alt icon-or"></i> 
+                    <span class="titre-or">L'Atelier des paroles</span>
                 </h2>
-                <div class="flex gap-2 flex-wrap mt-1">
-                    <button class="template-btn px-3 py-1.5 rounded text-xs font-medium shadow-sm btn-template" data-type="haiku">+ Haïku</button>
-                    <button class="template-btn px-3 py-1.5 rounded text-xs font-medium shadow-sm btn-template" data-type="rondeau">+ Rondeau</button>
-                    <button class="template-btn px-3 py-1.5 rounded text-xs font-medium shadow-sm btn-template" data-type="villanelle">+ Villanelle</button>
-                    <button class="template-btn px-3 py-1.5 rounded text-xs font-medium shadow-sm btn-template" data-type="sonnet">+ Sonnet</button>
-                    <button class="template-btn px-3 py-1.5 rounded text-xs font-medium shadow-sm btn-template" data-type="ballade">+ Ballade</button>
-                </div>
+                <p class="text-xs text-muted mt-1">Écris ici les paroles de ta composition (Couplet, Refrain, Pont...)</p>
             </div>
             
-            <!-- Zone d'édition et Compteur -->
-            <div class="flex flex-row flex-grow relative overflow-hidden panel-bg">
-                <!-- Textarea -->
-                <textarea id="poetryInput" class="flex-grow bg-transparent outline-none resize-none sync-lines pl-5 pr-2 overflow-auto textarea-custom" placeholder="Tape tes vers ici...&#10;Ex: La blanche colombe"></textarea>
-                
-                <!-- Syllable & Word Counter Margin -->
-                <div class="w-24 text-center sync-lines overflow-hidden select-none shrink-0 stats-margin" id="statsMargin" aria-hidden="true">
-                    <!-- Format: ( Syl, Mots ) injected by JS -->
-                </div>
+            <!-- Zone d'édition -->
+            <div class="flex flex-col flex-grow relative overflow-hidden panel-bg">
+                <textarea id="lyricsInput" class="flex-grow bg-transparent outline-none resize-none p-5 leading-relaxed overflow-auto textarea-custom text-sm font-medium" placeholder="Tape tes paroles ici...&#10;&#10;[Couplet 1]&#10;..."></textarea>
             </div>
         </section>
 
         <!-- DRAGGABLE RESIZER -->
         <div id="resizer" class="w-1.5 cursor-col-resize shrink-0 z-20 flex items-center justify-center group relative shadow-lg resizer-bar">
-            <!-- Petite poignée visuelle au centre du séparateur -->
             <div class="h-8 w-0.5 rounded resizer-handle"></div>
         </div>
 
         <!-- PANNEAU DROIT : L'Atelier du son -->
         <section id="rightPanel" class="flex-grow flex flex-col overflow-y-auto relative min-w-[15%] panel-bg">
             
+            <!-- EN-TÊTE AVEC GESTION MULTI-SLOTS -->
             <div class="p-3 shrink-0 sticky top-0 z-10 panel-header">
-                <h2 class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
-                    <i class="fas fa-sliders-h icon-or"></i> 
-                    <span class="titre-or">L'Atelier du son</span>
-                </h2>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <h2 class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-sliders-h icon-or"></i> 
+                        <span class="titre-or">L'Atelier du son</span>
+                    </h2>
+                    
+                    <div class="flex gap-2 items-center w-full sm:w-auto">
+                        <select id="compoSelect" class="bg-[#0a0a0a] border border-[#1e293b] text-[#ffd700] rounded px-2 py-1.5 text-xs outline-none cursor-pointer flex-1 sm:flex-none font-medium">
+                            <!-- Rempli par le JavaScript -->
+                        </select>
+                        <input type="text" id="compoNameInput" class="bg-[#0a0a0a] border border-[#1e293b] text-white rounded px-2 py-1.5 text-xs outline-none w-32 placeholder-slate-500" placeholder="Renommer...">
+                    </div>
+                </div>
             </div>
             
             <div class="p-6 flex flex-col gap-6">
@@ -369,11 +313,13 @@
                             <option value="Acoustique">Guitare Acoustique</option>
                             <option value="Classique">Guitare Classique (Nylon)</option>
                             <option value="Electrique">Guitare Électrique</option>
+                            <option value="Piano">Piano</option>
+                            <option value="Autre">Autre</option>
                         </select>
                     </div>
                     
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-medium uppercase tracking-wider text-muted">Accordage (Tuning)</label>
+                        <label class="text-xs font-medium uppercase tracking-wider text-muted">Accordage / Tonalité</label>
                         <input type="text" id="tuning" placeholder="ex: Standard, Drop D..." class="rounded-md p-2.5 outline-none input-custom">
                     </div>
 
@@ -385,20 +331,48 @@
 
                 <hr class="separator-line">
 
-                <!-- Grille d'accords dynamique -->
-                <div class="flex flex-col gap-3">
-                    <div class="flex justify-between items-center">
-                        <label class="text-xs font-medium uppercase tracking-wider flex items-center gap-2 text-muted">
-                            <i class="fas fa-music"></i> Grille d'accords
-                        </label>
-                        <button id="addChordBtn" class="text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-md btn-add">
-                            <i class="fas fa-plus"></i> Ajouter
-                        </button>
-                    </div>
+                <!-- 3 GRILLES D'ACCORDS DYNAMIQUES -->
+                <div class="flex flex-col gap-8 pb-10">
                     
-                    <div id="chordList" class="flex flex-wrap gap-3 items-center min-h-[50px] p-4 rounded-lg chord-list-container">
-                        <!-- Chords injected here -->
+                    <!-- COUPLET -->
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-medium uppercase tracking-wider flex items-center gap-2 text-muted">
+                                <i class="fas fa-music"></i> Grille : Couplet
+                            </label>
+                            <button id="addChordCoupletBtn" class="text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-md btn-add">
+                                <i class="fas fa-plus"></i> Ajouter
+                            </button>
+                        </div>
+                        <div id="chordListCouplet" class="flex flex-wrap gap-3 items-center min-h-[50px] p-4 rounded-lg chord-list-container"></div>
                     </div>
+
+                    <!-- REFRAIN -->
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-medium uppercase tracking-wider flex items-center gap-2 text-muted">
+                                <i class="fas fa-music"></i> Grille : Refrain
+                            </label>
+                            <button id="addChordRefrainBtn" class="text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-md btn-add">
+                                <i class="fas fa-plus"></i> Ajouter
+                            </button>
+                        </div>
+                        <div id="chordListRefrain" class="flex flex-wrap gap-3 items-center min-h-[50px] p-4 rounded-lg chord-list-container"></div>
+                    </div>
+
+                    <!-- PONT -->
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-medium uppercase tracking-wider flex items-center gap-2 text-muted">
+                                <i class="fas fa-music"></i> Grille : Pont
+                            </label>
+                            <button id="addChordPontBtn" class="text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-md btn-add">
+                                <i class="fas fa-plus"></i> Ajouter
+                            </button>
+                        </div>
+                        <div id="chordListPont" class="flex flex-wrap gap-3 items-center min-h-[50px] p-4 rounded-lg chord-list-container"></div>
+                    </div>
+
                 </div>
 
             </div>
@@ -408,112 +382,164 @@
 
     <script>
         // DOM Elements
-        const poetryInput = document.getElementById('poetryInput');
-        const statsMargin = document.getElementById('statsMargin');
+        const lyricsInput = document.getElementById('lyricsInput');
         const guitarType = document.getElementById('guitarType');
         const tuning = document.getElementById('tuning');
         const effectsNotes = document.getElementById('effectsNotes');
-        const chordListContainer = document.getElementById('chordList');
-        const addChordBtn = document.getElementById('addChordBtn');
-        const templateBtns = document.querySelectorAll('.template-btn');
+        const compoSelect = document.getElementById('compoSelect');
+        const compoNameInput = document.getElementById('compoNameInput');
+
+        // Containers et Boutons pour les 3 grilles
+        const chordListCouplet = document.getElementById('chordListCouplet');
+        const addChordCoupletBtn = document.getElementById('addChordCoupletBtn');
+        
+        const chordListRefrain = document.getElementById('chordListRefrain');
+        const addChordRefrainBtn = document.getElementById('addChordRefrainBtn');
+        
+        const chordListPont = document.getElementById('chordListPont');
+        const addChordPontBtn = document.getElementById('addChordPontBtn');
 
         // Resizer Elements
         const resizer = document.getElementById('resizer');
         const leftPanel = document.getElementById('leftPanel');
         let isResizing = false;
 
-        const STORAGE_KEY = 'riffs_rimes_app_data';
+        const STORAGE_KEY = 'riffs_rimes_compositions';
         const WIDTH_STORAGE_KEY = 'riffs_rimes_panel_width';
-        let chordsArray = [];
 
-        // Templates Poétiques
-        const templates = {
-            haiku: "Ligne 1\nLigne 2\nLigne 3",
-            rondeau: "--- Strophe 1 ---\nVers (A)\nVers (A)\nVers (B)\nVers (B)\nVers (A)\n\n--- Strophe 2 ---\nVers (A)\nVers (A)\nVers (B)\n[Rentrent]\n\n--- Strophe 3 ---\nVers (A)\nVers (A)\nVers (B)\nVers (B)\nVers (A)\n[Rentrent]",
-            villanelle: "A1 (Refrain 1)\nb\nA2 (Refrain 2)\n\na\nb\nA1\n\na\nb\nA2\n\na\nb\nA1\n\na\nb\nA2\n\na\nb\nA1\nA2",
-            sonnet: "--- Quatrain 1 ---\nVers (a)\nVers (b)\nVers (b)\nVers (a)\n\n--- Quatrain 2 ---\nVers (a)\nVers (b)\nVers (b)\nVers (a)\n\n--- Tercet 1 ---\nVers (c)\nVers (c)\nVers (d)\n\n--- Tercet 2 ---\nVers (e)\nVers (e)\nVers (d)",
-            ballade: "--- Huitain 1 ---\nVers (a)\nVers (b)\nVers (a)\nVers (b)\nVers (b)\nVers (c)\nVers (b)\nVers (C) [Refrain]\n\n--- Huitain 2 ---\nVers (a)\nVers (b)\nVers (a)\nVers (b)\nVers (b)\nVers (c)\nVers (b)\nVers (C) [Refrain]\n\n--- Huitain 3 ---\nVers (a)\nVers (b)\nVers (a)\nVers (b)\nVers (b)\nVers (c)\nVers (b)\nVers (C) [Refrain]\n\n--- Envoi ---\nVers (b)\nVers (c)\nVers (b)\nVers (C) [Refrain]"
+        // ==========================================
+        // GESTION MULTI-SLOTS (5 Compositions)
+        // ==========================================
+        
+        let composData = {
+            currentSlot: 0,
+            slots: [
+                { name: "Compo 1", lyrics: "", chordsCouplet: [], chordsRefrain: [], chordsPont: [], guitarType: "Acoustique", tuning: "", effectsNotes: "" },
+                { name: "Compo 2", lyrics: "", chordsCouplet: [], chordsRefrain: [], chordsPont: [], guitarType: "Acoustique", tuning: "", effectsNotes: "" },
+                { name: "Compo 3", lyrics: "", chordsCouplet: [], chordsRefrain: [], chordsPont: [], guitarType: "Acoustique", tuning: "", effectsNotes: "" },
+                { name: "Compo 4", lyrics: "", chordsCouplet: [], chordsRefrain: [], chordsPont: [], guitarType: "Acoustique", tuning: "", effectsNotes: "" },
+                { name: "Compo 5", lyrics: "", chordsCouplet: [], chordsRefrain: [], chordsPont: [], guitarType: "Acoustique", tuning: "", effectsNotes: "" }
+            ]
         };
 
-        function compterSyllabes(ligne) {
-            if (!ligne.trim()) return 0;
-            const mots = ligne.toLowerCase().replace(/[.,;!?:'"()]/g, '').split(/\s+/).filter(m => m.length > 0);
-            let totalSyllabes = 0;
+        // Sauvegarde Globale
+        function saveData() {
+            const activeSlot = composData.slots[composData.currentSlot];
+            activeSlot.lyrics = lyricsInput.value;
+            activeSlot.guitarType = guitarType.value;
+            activeSlot.tuning = tuning.value;
+            activeSlot.effectsNotes = effectsNotes.value;
 
-            for (let i = 0; i < mots.length; i++) {
-                let mot = mots[i];
-                let compteMot = 0;
-                
-                const groupesVoyelles = mot.match(/[aeiouyâàäéèêëîïôöûüùœæ]+/g);
-                if (groupesVoyelles) {
-                    compteMot = groupesVoyelles.length;
-                }
-
-                if (mot.endsWith('e')) {
-                    if (i === mots.length - 1) {
-                        compteMot -= 1;
-                    } else {
-                        const motSuivant = mots[i + 1];
-                        const commenceParVoyelleOuH = /^[aeiouyâàäéèêëîïôöûüùœæh]/.test(motSuivant);
-                        if (commenceParVoyelleOuH) {
-                            compteMot -= 1; 
-                        }
-                    }
-                }
-                
-                if (compteMot <= 0 && mot.length > 0) compteMot = 1; 
-                totalSyllabes += compteMot;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(composData));
+            
+            // Effet visuel sauvegarde
+            const indicateurSave = document.querySelector('.fa-save');
+            if (indicateurSave) {
+                indicateurSave.style.color = '#ffd700'; 
+                setTimeout(() => { indicateurSave.style.color = ''; }, 400);
             }
-            return totalSyllabes;
         }
 
-        function updateStats() {
-            const lignes = poetryInput.value.split('\n');
-            let statsHtml = '';
+        // Chargement Global et Migration
+        function loadData() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            const oldSavedData = localStorage.getItem('riffs_rimes_app_data');
             
-            lignes.forEach(ligne => {
-                const textTrimmed = ligne.trim();
-                const nbMots = textTrimmed ? textTrimmed.split(/\s+/).length : 0;
-                
-                if (nbMots === 0) {
-                    statsHtml += `<div>&nbsp;</div>`;
-                } else {
-                    const nbSyllabes = compterSyllabes(ligne);
-                    statsHtml += `<div class="text-xs">( ${nbSyllabes}, ${nbMots} )</div>`;
-                }
+            if (savedData) {
+                try {
+                    composData = JSON.parse(savedData);
+                    // Migration automatique pour les anciennes sauvegardes
+                    composData.slots.forEach(slot => {
+                        // Migration poésie -> paroles
+                        if (slot.poetry !== undefined) {
+                            slot.lyrics = slot.poetry;
+                            delete slot.poetry;
+                        }
+                        // Migration de l'ancienne grille unique vers le "Couplet"
+                        if (slot.chords !== undefined) {
+                            slot.chordsCouplet = slot.chords;
+                            slot.chordsRefrain = [];
+                            slot.chordsPont = [];
+                            delete slot.chords;
+                        }
+                        // Sécurité si les listes n'existent pas
+                        if (!slot.chordsCouplet) slot.chordsCouplet = [];
+                        if (!slot.chordsRefrain) slot.chordsRefrain = [];
+                        if (!slot.chordsPont) slot.chordsPont = [];
+                    });
+                } catch (e) { console.error("Erreur lecture", e); }
+            } else if (oldSavedData) {
+                try {
+                    const oldData = JSON.parse(oldSavedData);
+                    composData.slots[0].lyrics = oldData.poetry || '';
+                    composData.slots[0].guitarType = oldData.guitarType || 'Acoustique';
+                    composData.slots[0].tuning = oldData.tuning || '';
+                    composData.slots[0].effectsNotes = oldData.effectsNotes || '';
+                    composData.slots[0].chordsCouplet = oldData.chords || [];
+                    composData.slots[0].name = "Ancienne Compo";
+                } catch (e) {}
+            }
+
+            // Restauration de la largeur de l'écran
+            const savedWidth = localStorage.getItem(WIDTH_STORAGE_KEY);
+            if (savedWidth) leftPanel.style.width = savedWidth;
+
+            updateCompoSelectUI();
+            injectCurrentSlotData();
+        }
+
+        function updateCompoSelectUI() {
+            compoSelect.innerHTML = '';
+            composData.slots.forEach((slot, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.innerText = `${index + 1}. ${slot.name}`;
+                compoSelect.appendChild(option);
             });
-            statsMargin.innerHTML = statsHtml;
+            compoSelect.value = composData.currentSlot;
+        }
+
+        function injectCurrentSlotData() {
+            const activeSlot = composData.slots[composData.currentSlot];
+            
+            compoNameInput.value = activeSlot.name;
+            lyricsInput.value = activeSlot.lyrics || '';
+            guitarType.value = activeSlot.guitarType;
+            tuning.value = activeSlot.tuning;
+            effectsNotes.value = activeSlot.effectsNotes;
+            
+            renderAllChords();
+        }
+
+        // Événements Multi-Slots
+        compoSelect.addEventListener('change', (e) => {
+            saveData(); 
+            composData.currentSlot = parseInt(e.target.value);
+            injectCurrentSlotData();
+        });
+
+        compoNameInput.addEventListener('input', (e) => {
+            const nouveauNom = e.target.value.trim() || `Compo ${composData.currentSlot + 1}`;
+            composData.slots[composData.currentSlot].name = nouveauNom;
+            updateCompoSelectUI();
             saveData();
-        }
-
-        poetryInput.addEventListener('scroll', () => {
-            statsMargin.scrollTop = poetryInput.scrollTop;
-            poetryInput.scrollLeft = 0; 
-        });
-        poetryInput.addEventListener('input', updateStats);
-
-        templateBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const type = e.target.getAttribute('data-type');
-                if (templates[type]) {
-                    if (poetryInput.value.trim() !== "" && !confirm("Insérer ce modèle à la fin de ton texte ?")) return;
-                    const separator = poetryInput.value.trim().length > 0 ? '\n\n' : '';
-                    poetryInput.value = poetryInput.value + separator + templates[type];
-                    updateStats();
-                    poetryInput.scrollTop = poetryInput.scrollHeight;
-                }
-            });
         });
 
-        function renderChords() {
-            chordListContainer.innerHTML = '';
+        // ==========================================
+        // LOGIQUE 3 GRILLES D'ACCORDS
+        // ==========================================
+        
+        // Fonction générique pour dessiner une section d'accords
+        function renderChordSection(sectionKey, containerElement) {
+            containerElement.innerHTML = '';
+            const activeChords = composData.slots[composData.currentSlot][sectionKey];
             
-            if (chordsArray.length === 0) {
-                chordListContainer.innerHTML = '<span class="text-xs italic w-full text-center text-muted">Aucun accord pour le moment.</span>';
+            if (!activeChords || activeChords.length === 0) {
+                containerElement.innerHTML = '<span class="text-xs italic w-full text-center text-muted">Aucun accord pour le moment.</span>';
                 return;
             }
 
-            chordsArray.forEach((chord, index) => {
+            activeChords.forEach((chord, index) => {
                 const chordDiv = document.createElement('div');
                 chordDiv.className = 'flex items-center rounded shadow-sm overflow-hidden chord-box';
                 
@@ -524,7 +550,7 @@
                 input.placeholder = 'Am';
                 input.maxLength = 6;
                 input.oninput = (e) => {
-                    chordsArray[index] = e.target.value;
+                    activeChords[index] = e.target.value;
                     saveData();
                 };
 
@@ -532,26 +558,48 @@
                 removeBtn.className = 'px-2 py-1.5 chord-del';
                 removeBtn.innerHTML = '<i class="fas fa-times text-xs"></i>';
                 removeBtn.onclick = () => {
-                    chordsArray.splice(index, 1);
-                    renderChords();
+                    activeChords.splice(index, 1);
+                    renderAllChords();
                     saveData();
                 };
 
                 chordDiv.appendChild(input);
                 chordDiv.appendChild(removeBtn);
-                chordListContainer.appendChild(chordDiv);
+                containerElement.appendChild(chordDiv);
             });
         }
 
-        addChordBtn.addEventListener('click', () => {
-            chordsArray.push('');
-            renderChords();
-            saveData();
-            const inputs = chordListContainer.querySelectorAll('.chord-input');
-            if (inputs.length > 0) inputs[inputs.length - 1].focus();
-        });
+        // Met à jour l'affichage des 3 grilles d'un coup
+        function renderAllChords() {
+            renderChordSection('chordsCouplet', chordListCouplet);
+            renderChordSection('chordsRefrain', chordListRefrain);
+            renderChordSection('chordsPont', chordListPont);
+        }
 
-        // --- LOGIQUE DU RESIZER (Compatible Souris & Écran Tactile) ---
+        // Fonction générique pour configurer le bouton "+" d'une section
+        function setupAddButton(buttonElement, sectionKey, containerElement) {
+            buttonElement.addEventListener('click', () => {
+                if (!composData.slots[composData.currentSlot][sectionKey]) {
+                    composData.slots[composData.currentSlot][sectionKey] = [];
+                }
+                composData.slots[composData.currentSlot][sectionKey].push('');
+                renderAllChords();
+                saveData();
+                
+                // On met le focus sur le dernier accord ajouté de cette section précise
+                const inputs = containerElement.querySelectorAll('.chord-input');
+                if (inputs.length > 0) inputs[inputs.length - 1].focus();
+            });
+        }
+
+        // On branche les 3 boutons "+" à leurs grilles respectives
+        setupAddButton(addChordCoupletBtn, 'chordsCouplet', chordListCouplet);
+        setupAddButton(addChordRefrainBtn, 'chordsRefrain', chordListRefrain);
+        setupAddButton(addChordPontBtn, 'chordsPont', chordListPont);
+
+        // ==========================================
+        // RESIZER
+        // ==========================================
         function startResize(e) {
             isResizing = true;
             document.body.style.cursor = 'col-resize';
@@ -560,14 +608,9 @@
 
         function resize(e) {
             if (!isResizing) return;
-            
-            // Récupère la position X selon si c'est la souris ou le doigt (tactile)
             const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
             const newWidth = (clientX / window.innerWidth) * 100;
-            
-            if (newWidth >= 15 && newWidth <= 85) {
-                leftPanel.style.width = `${newWidth}%`;
-            }
+            if (newWidth >= 15 && newWidth <= 85) leftPanel.style.width = `${newWidth}%`;
         }
 
         function stopResize() {
@@ -579,61 +622,18 @@
             }
         }
 
-        // Événements Souris
         resizer.addEventListener('mousedown', startResize);
         document.addEventListener('mousemove', resize);
         document.addEventListener('mouseup', stopResize);
-
-        // Événements Tactiles (Pour mobile)
         resizer.addEventListener('touchstart', startResize, { passive: true });
         document.addEventListener('touchmove', resize, { passive: true });
         document.addEventListener('touchend', stopResize);
 
-        // --- SAUVEGARDE ET CHARGEMENT ---
-        function saveData() {
-            const data = {
-                poetry: poetryInput.value,
-                guitarType: guitarType.value,
-                tuning: tuning.value,
-                effectsNotes: effectsNotes.value,
-                chords: chordsArray
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            
-            // Effet visuel : l'icône de sauvegarde clignote en or
-            const indicateurSave = document.querySelector('.fa-save');
-            if (indicateurSave) {
-                indicateurSave.style.color = '#ffd700'; 
-                setTimeout(() => {
-                    indicateurSave.style.color = ''; 
-                }, 400);
-            }
-        }
 
-        function loadData() {
-            const savedData = localStorage.getItem(STORAGE_KEY);
-            if (savedData) {
-                try {
-                    const data = JSON.parse(savedData);
-                    poetryInput.value = data.poetry || '';
-                    guitarType.value = data.guitarType || 'Acoustique';
-                    tuning.value = data.tuning || '';
-                    effectsNotes.value = data.effectsNotes || '';
-                    chordsArray = data.chords || [];
-                } catch (e) {
-                    console.error("Erreur de lecture des données.", e);
-                }
-            }
-
-            const savedWidth = localStorage.getItem(WIDTH_STORAGE_KEY);
-            if (savedWidth) {
-                leftPanel.style.width = savedWidth;
-            }
-
-            updateStats();
-            renderChords();
-        }
-
+        // ==========================================
+        // AUTO-SAUVEGARDE ET INIT
+        // ==========================================
+        lyricsInput.addEventListener('input', saveData);
         guitarType.addEventListener('change', saveData);
         tuning.addEventListener('input', saveData);
         effectsNotes.addEventListener('input', saveData);
