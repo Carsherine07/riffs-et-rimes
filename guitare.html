@@ -65,6 +65,7 @@
             border-radius: 8px;
             border: 1px solid #1e293b;
             flex-wrap: wrap;
+            align-items: flex-end;
         }
 
         .input-group {
@@ -72,7 +73,7 @@
             flex-direction: column;
             gap: 8px;
             flex: 1;
-            min-width: 200px;
+            min-width: 150px;
         }
 
         label {
@@ -99,6 +100,29 @@
         select:focus {
             border-color: #ffd700;
             box-shadow: 0 0 0 1px #ffd700;
+        }
+
+        .btn-play {
+            background: linear-gradient(to right, #ffd700, #b8860b);
+            color: #000000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            height: 44px;
+            min-width: 200px;
+        }
+        
+        .btn-play:hover {
+            background: linear-gradient(to right, #fef08a, #ffd700);
+            transform: scale(1.02);
         }
 
         .guitar-wrapper {
@@ -176,6 +200,12 @@
             font-size: 1.1rem;
             font-weight: bold;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            transition: transform 0.1s;
+        }
+        
+        .nut-marker.playable:hover {
+            color: #ffffff !important;
+            transform: translateY(-50%) scale(1.3);
         }
 
         .finger-dot {
@@ -187,6 +217,13 @@
             transform: translate(-50%, -50%);
             z-index: 10;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.4), 0 2px 4px rgba(0,0,0,0.8);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .finger-dot:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
         }
 
         .finger-dot.root {
@@ -229,6 +266,11 @@
             font-size: 0.8rem;
             font-weight: 600;
         }
+
+        @media (max-width: 768px) {
+            .controls { flex-direction: column; align-items: stretch; }
+            .btn-play { margin-top: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -242,8 +284,18 @@
         <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
 
         <section class="controls">
+            <!-- NOUVEAU : Choix de l'instrument pour l'Audio -->
             <div class="input-group">
-                <label for="rootNote">Note Fondamentale (Tonique)</label>
+                <label for="selectGuitarType">Instrument</label>
+                <select id="selectGuitarType">
+                    <option value="acoustique">Guitare Acoustique</option>
+                    <option value="classique">Guitare Classique (Nylon)</option>
+                    <option value="electrique">Guitare Électrique</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="rootNote">Note Fondamentale</label>
                 <select id="rootNote">
                     <option value="0">Do (C)</option>
                     <option value="1">Do# / Réb (C#)</option>
@@ -263,26 +315,36 @@
             <div class="input-group">
                 <label for="chordType">Type d'accord</label>
                 <select id="chordType">
-                    <optgroup label="Accords de Base">
+                    <optgroup label="Triades de base">
                         <option value="major">Majeur</option>
                         <option value="minor" selected>Mineur (m)</option>
-                        <option value="dom7">Septième (7)</option>
-                        <option value="min7">Mineur 7 (m7)</option>
-                        <option value="maj7">Majeur 7 (M7 / Maj7)</option>
-                    </optgroup>
-                    <optgroup label="Couleurs & Suspensions">
-                        <option value="sus2">Sus 2</option>
-                        <option value="sus4">Sus 4</option>
-                        <option value="add9">Add 9</option>
-                        <option value="madd9">Mineur Add 9 (m add9)</option>
-                    </optgroup>
-                    <optgroup label="Diminués & Augmentés">
                         <option value="dim">Diminué (dim)</option>
                         <option value="aug">Augmenté (aug)</option>
+                    </optgroup>
+                    <optgroup label="Accords Suspendus">
+                        <option value="sus2">Sus 2</option>
+                        <option value="sus4">Sus 4</option>
+                    </optgroup>
+                    <optgroup label="Accords de Septième">
+                        <option value="dom7">Septième de Dominante (7)</option>
+                        <option value="min7">Mineur 7 (m7)</option>
+                        <option value="maj7">Majeur 7 (M7 / Maj7)</option>
+                        <option value="dim7">Diminué 7 (dim7)</option>
                         <option value="m7b5">Demi-diminué (m7b5)</option>
+                    </optgroup>
+                    <optgroup label="Extensions (9, 11, 13)">
+                        <option value="add9">Add 9 (add9)</option>
+                        <option value="madd9">Mineur Add 9 (m add9)</option>
+                        <option value="dom9">Neuvième (9)</option>
+                        <option value="maj9">Majeur 9 (Maj9)</option>
                     </optgroup>
                 </select>
             </div>
+
+            <!-- NOUVEAU : Bouton pour jouer l'accord -->
+            <button id="playChordBtn" class="btn-play">
+                <i class="fas fa-volume-up"></i> Jouer l'accord
+            </button>
         </section>
 
         <!-- VISUALISEUR MANCHE -->
@@ -295,6 +357,87 @@
     </main>
 
     <script>
+        // ==========================================
+        // 1. MOTEUR AUDIO (WEB AUDIO API)
+        // ==========================================
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        const soundCache = {}; 
+        
+        // Gamme chromatique (avec bémols selon le nom de tes fichiers)
+        const noteNames = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+        // Convertit la Corde + la Case en nom de fichier (ex: C4)
+        function getNoteNom(numeroCorde, caseFrette) {
+            const cordesAVide = [52, 47, 43, 38, 33, 28]; // Mi aigu(1) à Mi grave(6)
+            const noteAbsolue = cordesAVide[numeroCorde - 1] + parseInt(caseFrette);
+            const octave = Math.floor(noteAbsolue / 12);
+            const nomDeLaNote = noteNames[noteAbsolue % 12];
+            return `${nomDeLaNote}${octave}`; 
+        }
+
+        // Joue une note unique
+        function jouerNote(numeroCorde, caseFrette) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const dossierGuitare = document.getElementById('selectGuitarType').value; 
+            const nomFichier = getNoteNom(numeroCorde, caseFrette);
+            const url = `sons/${dossierGuitare}/${nomFichier}.mp3`;
+
+            if (soundCache[url]) {
+                lancerBuffer(soundCache[url]);
+                return;
+            }
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error(`Fichier introuvable: ${url}`);
+                    return response.arrayBuffer();
+                })
+                .then(data => audioCtx.decodeAudioData(data))
+                .then(buffer => {
+                    soundCache[url] = buffer;
+                    lancerBuffer(buffer);
+                })
+                .catch(err => console.warn(err));
+        }
+
+        function lancerBuffer(buffer) {
+            const source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioCtx.destination);
+            source.start(0);
+        }
+
+        // Joue tout l'accord d'un coup (comme un coup de médiator)
+        function jouerAccord() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const root = parseInt(rootSelect.value);
+            const type = chordSelect.value;
+            const voicing = getChordVoicing(root, type); 
+
+            let delay = 0;
+            // On parcourt de la 6ème corde (i=0) à la 1ère corde (i=5)
+            for(let i = 0; i <= 5; i++) {
+                const fret = voicing[i];
+                if(fret !== 'x') {
+                    const stringNum = 6 - i; 
+                    // setTimeout crée l'effet "gratté" en décalant chaque corde de 40ms
+                    setTimeout(() => {
+                        jouerNote(stringNum, fret);
+                    }, delay);
+                    delay += 40; 
+                }
+            }
+        }
+
+        document.getElementById('playChordBtn').addEventListener('click', jouerAccord);
+
+
+        // ==========================================
+        // 2. DICTIONNAIRE D'ACCORDS ET MANCHE
+        // ==========================================
         const barreShapes = {
             'E': {
                 'major': [0, 2, 2, 1, 0, 0],
@@ -308,7 +451,10 @@
                 'sus4':  [0, 2, 2, 2, 0, 0], 
                 'add9':  [0, 2, 4, 1, 0, 0],
                 'madd9': [0, 2, 4, 0, 0, 0],
-                'm7b5':  [0, 'x', 0, 0, 1, 'x'] 
+                'm7b5':  [0, 'x', 0, 0, 1, 'x'],
+                'dim7':  [0, 'x', -1, 0, -1, 'x'],
+                'dom9':  [0, 2, 0, 1, 0, 2],
+                'maj9':  [0, 2, 1, 1, 0, 2]
             },
             'A': {
                 'major': ['x', 0, 2, 2, 2, 0],
@@ -322,7 +468,10 @@
                 'sus4':  ['x', 0, 2, 2, 3, 0],
                 'add9':  ['x', 0, 2, 4, 2, 0],
                 'madd9': ['x', 0, 2, 4, 1, 0],
-                'm7b5':  ['x', 0, 1, 0, 1, 'x'] 
+                'm7b5':  ['x', 0, 1, 0, 1, 'x'],
+                'dim7':  ['x', 0, 1, 2, 1, 'x'],
+                'dom9':  ['x', 0, 2, 0, 2, 0],
+                'maj9':  ['x', 0, 2, 1, 0, 0]
             }
         };
 
@@ -369,7 +518,11 @@
             }
 
             const baseShape = barreShapes[shapeFamily][type];
-            return baseShape.map(fret => fret === 'x' ? 'x' : fret + offset);
+            return baseShape.map(fret => {
+                if (fret === 'x') return 'x';
+                const calculatedFret = fret + offset;
+                return calculatedFret < 0 ? 'x' : calculatedFret;
+            });
         }
 
         const fretboard = document.getElementById('fretboard');
@@ -399,7 +552,6 @@
                 label.style.top = `${stringPos}%`;
                 tuningLabels.appendChild(label);
             }
-            fretboard.appendChild(tuningLabels);
 
             for (let f = 1; f <= numFrets; f++) {
                 const fretPos = (f / numFrets) * 100;
@@ -408,6 +560,7 @@
                 fretLine.style.left = `${fretPos}%`;
                 fretboard.appendChild(fretLine);
 
+                // Correction de l'alignement des points et numéros (f - 0.5)
                 if ([3, 5, 7, 9, 15].includes(f)) {
                     const marker = document.createElement('div');
                     marker.className = 'fret-marker';
@@ -425,7 +578,6 @@
                     fretboard.appendChild(marker2);
                 }
 
-                // Ajout des numéros pour les cases impaires (1, 3, 5, 7...)
                 if (f % 2 !== 0) {
                     const fretNum = document.createElement('div');
                     fretNum.className = 'fret-number';
@@ -445,16 +597,6 @@
             fretboard.appendChild(fingersContainer);
         }
 
-            const nutContainer = document.createElement('div');
-            nutContainer.className = 'nut-indicators';
-            nutContainer.id = 'nut-indicators';
-            fretboard.appendChild(nutContainer);
-
-            const fingersContainer = document.createElement('div');
-            fingersContainer.id = 'fingers';
-            fretboard.appendChild(fingersContainer);
-        
-
         function updateVoicingDisplay() {
             const root = parseInt(rootSelect.value);
             const type = chordSelect.value;
@@ -472,6 +614,7 @@
             for(let i = 5; i >= 0; i--) {
                 const fret = voicing[i];
                 const stringPosPercent = ((5 - i) * 20); 
+                const stringNum = 6 - i; // Calcul du numéro de corde (1=Aiguë, 6=Grave)
 
                 const indicator = document.createElement('div');
                 indicator.className = 'nut-marker';
@@ -483,7 +626,11 @@
                 } else if (fret === 0) {
                     indicator.innerText = 'O';
                     indicator.style.color = '#ffd700'; 
-                    indicator.classList.add('titre-or'); 
+                    indicator.classList.add('titre-or', 'playable'); 
+                    indicator.title = "Écouter la corde à vide";
+                    // Déclenche l'audio au clic
+                    indicator.onclick = () => jouerNote(stringNum, 0);
+                    indicator.style.cursor = 'pointer';
                 }
                 nutContainer.appendChild(indicator);
 
@@ -500,16 +647,70 @@
                         dot.classList.add('root');
                     }
                     
+                    dot.title = "Écouter la note";
+                    // Déclenche l'audio au clic
+                    dot.onclick = () => jouerNote(stringNum, fret);
+                    
                     fingersContainer.appendChild(dot);
                 }
             }
         }
 
+        // ==========================================
+        // 3. SAUVEGARDE ET INITIALISATION
+        // ==========================================
+        
+        // On construit le fond du manche (cordes, frettes...)
         buildFretboardBackground();
-        updateVoicingDisplay();
+        
+        // Clé de sauvegarde unique pour la guitare
+        const GUITAR_STORAGE_KEY = 'riffs_rimes_guitare_state';
 
-        rootSelect.addEventListener('change', updateVoicingDisplay);
-        chordSelect.addEventListener('change', updateVoicingDisplay);
+        // Fonction pour mémoriser les choix dans le téléphone
+        function saveGuitarState() {
+            const state = {
+                instrument: document.getElementById('selectGuitarType').value,
+                root: rootSelect.value,
+                type: chordSelect.value
+            };
+            localStorage.setItem(GUITAR_STORAGE_KEY, JSON.stringify(state));
+        }
+
+        // Fonction pour recharger les choix au lancement de la page
+        function loadGuitarState() {
+            const savedState = localStorage.getItem(GUITAR_STORAGE_KEY);
+            if (savedState) {
+                try {
+                    const state = JSON.parse(savedState);
+                    if (state.instrument) document.getElementById('selectGuitarType').value = state.instrument;
+                    if (state.root) rootSelect.value = state.root;
+                    if (state.type) chordSelect.value = state.type;
+                } catch (e) {
+                    console.error("Erreur de chargement", e);
+                }
+            }
+            // Une fois les menus mis à jour, on dessine l'accord correspondant
+            updateVoicingDisplay();
+        }
+
+        // Au démarrage : on charge les données au lieu de juste afficher le Mi mineur
+        loadGuitarState();
+
+        // Écouteurs d'événements : on met à jour le visuel ET on sauvegarde à chaque clic
+        rootSelect.addEventListener('change', () => {
+            updateVoicingDisplay();
+            saveGuitarState();
+        });
+        
+        chordSelect.addEventListener('change', () => {
+            updateVoicingDisplay();
+            saveGuitarState();
+        });
+        
+        document.getElementById('selectGuitarType').addEventListener('change', () => {
+            // Pas besoin de redessiner l'accord si on change juste le son, mais on sauvegarde
+            saveGuitarState();
+        });
 
     </script>
 </body>

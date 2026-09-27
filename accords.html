@@ -68,6 +68,7 @@
             border-radius: 8px;
             border: 1px solid #1e293b;
             flex-wrap: wrap;
+            align-items: flex-end;
         }
 
         .input-group {
@@ -104,6 +105,29 @@
             box-shadow: 0 0 0 1px #ffd700;
         }
 
+        .btn-play {
+            background: linear-gradient(to right, #ffd700, #b8860b);
+            color: #000000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            height: 44px;
+            min-width: 200px;
+        }
+        
+        .btn-play:hover {
+            background: linear-gradient(to right, #fef08a, #ffd700);
+            transform: scale(1.02);
+        }
+
         /* --- 3. PIANO INTERACTIF --- */
         .piano-container {
             display: flex;
@@ -116,7 +140,6 @@
         .piano {
             position: relative;
             height: 200px;
-            /* La largeur sera calculée par JS */
         }
 
         .key {
@@ -164,6 +187,11 @@
             background: linear-gradient(to bottom, #ffd700, #b8860b);
             border-color: #fef08a;
             color: #000;
+        }
+        
+        .key:active {
+            opacity: 0.8;
+            transform: scale(0.98);
         }
 
         /* --- 4. SECTION THEORIE --- */
@@ -219,6 +247,11 @@
         }
         
         .back-link:hover { color: #ffd700; }
+
+        @media (max-width: 768px) {
+            .controls { flex-direction: column; align-items: stretch; }
+            .btn-play { margin-top: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -278,6 +311,11 @@
                     </optgroup>
                 </select>
             </div>
+
+            <!-- BOUTON AUDIO -->
+            <button id="playChordBtn" class="btn-play">
+                <i class="fas fa-volume-up"></i> Jouer l'accord
+            </button>
         </section>
 
         <!-- PIANO INTERACTIF -->
@@ -310,44 +348,94 @@
     </main>
 
     <script>
-        // --- DONNEES DES ACCORDS (En demi-tons à partir de la fondamentale) ---
+        // ==========================================
+        // 1. MOTEUR AUDIO PIANO
+        // ==========================================
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        const soundCache = {}; 
+        const notesNamesAudio = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+        function getPianoNoteFileName(keyIndex) {
+            // L'index 0 correspond à la note Do de la 3ème octave (C3)
+            const octave = Math.floor(keyIndex / 12) + 3; 
+            const note = notesNamesAudio[keyIndex % 12];
+            return `${note}${octave}`; 
+        }
+
+        function jouerNotePiano(keyIndex) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const nomFichier = getPianoNoteFileName(keyIndex);
+            const url = `sons/piano/${nomFichier}.mp3`; 
+
+            if (soundCache[url]) {
+                lancerBuffer(soundCache[url]);
+                return;
+            }
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error(`Fichier introuvable: ${url}`);
+                    return response.arrayBuffer();
+                })
+                .then(data => audioCtx.decodeAudioData(data))
+                .then(buffer => {
+                    soundCache[url] = buffer;
+                    lancerBuffer(buffer);
+                })
+                .catch(err => console.warn("Le son n'est pas encore téléchargé ou introuvable:", err));
+        }
+
+        function lancerBuffer(buffer) {
+            const source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioCtx.destination);
+            source.start(0);
+        }
+
+        function jouerAccordPiano() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const root = parseInt(rootSelect.value);
+            const formula = chordFormulas[chordSelect.value];
+            
+            // Le piano joue toutes les notes simultanément
+            formula.forEach(interval => {
+                const targetKeyIndex = root + interval;
+                if (targetKeyIndex < totalKeys) {
+                    jouerNotePiano(targetKeyIndex);
+                }
+            });
+        }
+
+        document.getElementById('playChordBtn').addEventListener('click', jouerAccordPiano);
+
+        // ==========================================
+        // 2. DICTIONNAIRE ET VISUALISATION
+        // ==========================================
         const chordFormulas = {
-            // Triades
-            'major': [0, 4, 7],
-            'minor': [0, 3, 7],
-            'dim': [0, 3, 6],
-            'aug': [0, 4, 8],
-            // Suspendus
-            'sus2': [0, 2, 7],
-            'sus4': [0, 5, 7],
-            // Septièmes
-            'dom7': [0, 4, 7, 10],
-            'min7': [0, 3, 7, 10],
-            'maj7': [0, 4, 7, 11],
-            'dim7': [0, 3, 6, 9],
-            'm7b5': [0, 3, 6, 10], // demi-diminué
-            // Extensions (Le +12 correspond à l'octave supérieure)
-            'add9': [0, 4, 7, 14], 
-            'madd9': [0, 3, 7, 14],
-            'dom9': [0, 4, 7, 10, 14], // Fondamentale, tierce maj, quinte, 7eme min, 9eme
-            'maj9': [0, 4, 7, 11, 14]
+            'major': [0, 4, 7], 'minor': [0, 3, 7], 'dim': [0, 3, 6], 'aug': [0, 4, 8],
+            'sus2': [0, 2, 7], 'sus4': [0, 5, 7],
+            'dom7': [0, 4, 7, 10], 'min7': [0, 3, 7, 10], 'maj7': [0, 4, 7, 11], 
+            'dim7': [0, 3, 6, 9], 'm7b5': [0, 3, 6, 10],
+            'add9': [0, 4, 7, 14], 'madd9': [0, 3, 7, 14],
+            'dom9': [0, 4, 7, 10, 14], 'maj9': [0, 4, 7, 11, 14]
         };
 
         const notesNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
         const isBlackKey = [false, true, false, true, false, false, true, false, true, false, true, false];
 
-        // Éléments du DOM
         const pianoContainer = document.getElementById('piano');
         const rootSelect = document.getElementById('rootNote');
         const chordSelect = document.getElementById('chordType');
 
-        // Génération du Piano (2 Octaves + 1 note pour finir proprement sur un Do)
         const totalKeys = 25; 
-        const keyWidth = 48; // Largeur touche blanche
+        const keyWidth = 48; 
         let whiteKeyIndex = 0;
 
         function buildPiano() {
-            pianoContainer.style.width = `${15 * keyWidth}px`; // 15 touches blanches au total
+            pianoContainer.style.width = `${15 * keyWidth}px`; // 15 touches blanches
 
             for (let i = 0; i < totalKeys; i++) {
                 const noteTypeIndex = i % 12;
@@ -357,39 +445,35 @@
                 keyElement.classList.add('key');
                 keyElement.id = `key-${i}`;
                 keyElement.dataset.index = i;
+                keyElement.title = "Écouter la note";
 
                 if (isBlack) {
                     keyElement.classList.add('key-black');
-                    // Positionner la touche noire à cheval sur la précédente et la suivante
                     keyElement.style.left = `${(whiteKeyIndex * keyWidth) - 14}px`;
                 } else {
                     keyElement.classList.add('key-white');
                     keyElement.style.left = `${whiteKeyIndex * keyWidth}px`;
-                    // Afficher le nom de la note uniquement sur les Do pour se repérer
                     if (notesNames[noteTypeIndex] === 'C') {
                         keyElement.innerText = 'C';
                     }
                     whiteKeyIndex++;
                 }
 
+                // Jouer la note au clic
+                keyElement.addEventListener('click', () => jouerNotePiano(i));
+
                 pianoContainer.appendChild(keyElement);
             }
         }
 
-        // Mise à jour de l'affichage de l'accord
         function updateChordDisplay() {
-            // 1. Réinitialiser toutes les touches
             document.querySelectorAll('.key').forEach(k => k.classList.remove('active'));
 
-            // 2. Récupérer les valeurs choisies
             const root = parseInt(rootSelect.value);
             const formula = chordFormulas[chordSelect.value];
 
-            // 3. Activer les touches correspondantes
             formula.forEach(interval => {
                 const targetKeyIndex = root + interval;
-                
-                // Vérifier qu'on ne sort pas du clavier (max index 24)
                 if (targetKeyIndex < totalKeys) {
                     const keyToActivate = document.getElementById(`key-${targetKeyIndex}`);
                     if (keyToActivate) {
@@ -399,13 +483,45 @@
             });
         }
 
-        // Initialisation
+        // ==========================================
+        // 3. SAUVEGARDE ET INITIALISATION
+        // ==========================================
+        const PIANO_STORAGE_KEY = 'riffs_rimes_piano_state';
+
+        function savePianoState() {
+            const state = {
+                root: rootSelect.value,
+                type: chordSelect.value
+            };
+            localStorage.setItem(PIANO_STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function loadPianoState() {
+            const savedState = localStorage.getItem(PIANO_STORAGE_KEY);
+            if (savedState) {
+                try {
+                    const state = JSON.parse(savedState);
+                    if (state.root) rootSelect.value = state.root;
+                    if (state.type) chordSelect.value = state.type;
+                } catch (e) {
+                    console.error("Erreur de chargement", e);
+                }
+            }
+        }
+
         buildPiano();
+        loadPianoState();
         updateChordDisplay();
 
-        // Écouteurs d'événements
-        rootSelect.addEventListener('change', updateChordDisplay);
-        chordSelect.addEventListener('change', updateChordDisplay);
+        rootSelect.addEventListener('change', () => {
+            updateChordDisplay();
+            savePianoState();
+        });
+        
+        chordSelect.addEventListener('change', () => {
+            updateChordDisplay();
+            savePianoState();
+        });
 
     </script>
 </body>
